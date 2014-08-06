@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 # Read list of patients, go through dataList and retain only necessary patients
 # Works on Python 3 only, not Python 2
-# Version 2014-06-18
+# Version 2014-08-06
 
 ##### Parameters you can have fun playing with
 subjectList = "subjectsList.csv" # Will retrieve the list of rid's from this csv file.
@@ -18,10 +18,11 @@ import csv, random
 def csvObject(csvfile):
     try:
         check = csvfile.read(1024)
-        dialect = csv.Sniffer().sniff(check)
+        dialect = csv.Sniffer().sniff(check,delimiters=',\t ;:.')
         csvfile.seek(0) # Goes back to beginning
         reader = csv.reader(csvfile, dialect)
     except:
+        csvfile.seek(0) # Goes back to beginning
         reader = csv.reader(csvfile, delimiter=',')
     return reader
 
@@ -51,9 +52,9 @@ def listRID(csvfile):
     return list
 
 # Read rid's
-with open(subjectList, newline='') as csvfile:
+with open(subjectList, 'U') as csvfile:
     data1 = listRID(csvfile)
-with open(dataList, newline='') as csvfile:
+with open(dataList, 'U') as csvfile:
     data2 = listRID(csvfile)
 
 secretStash = ["Giraffes are flamboyant: that is why they never sleep.","There is a legend of a man who knows how to sing.","Once upon a time, there was light. If only that happened once.","If only the hippocampus could fly, we would all by dead by now.","A bug is very much like a human being: it doesn't know why it lives."]
