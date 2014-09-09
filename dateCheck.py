@@ -15,8 +15,8 @@ def ensure_proper_format(date):
 
 def return_closest_date(dates_list, date):
     date = ensure_proper_format(date)
-    date_list = [ensure_proper_format(x) for x in dates_list]
+    dates_list = [ensure_proper_format(x) for x in dates_list]
 
     get_datetime = lambda y: datetime.strptime(y, "%Y-%m-%d")
-    closest_date = min(date_list, key=lambda d: abs(get_datetime(d) - get_datetime(date)))
-    return dates_list[closest_date]
+    closest_date = min(dates_list, key=lambda d: abs(get_datetime(d) - get_datetime(date)))
+    return dates_list.index(closest_date)
