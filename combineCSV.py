@@ -123,14 +123,10 @@ try:
             if not data1_row:
                 continue
             desiredRow = False
-            data1Rid = bleach_rid(data1_row[data1_ridColumn])
             data2_list = []
 
             # Find rows corresponding to the given subject
-            #data2_list = [data2_row for data2_row in data2 if data1Rid == bleach_rid(data2_row[data2_ridColumn]]
-            for data2_row in data2:  # For each row in dataList.csv
-                if data1Rid == bleach_rid(data2_row[data2_ridColumn]):
-                    data2_list.append(data2_row)
+            data2_list = [row for row in data2 if bleach_rid(data1_row[data1_ridColumn]) == bleach_rid(row[data2_ridColumn])]
 
             # Compare rows in data2 for the given desired subject and return desired row
             if not data2_list: # If no row match
@@ -144,13 +140,13 @@ try:
             elif not headersToCompare: # If no headers besides rid and date to compare
                 desiredRow = data2_list[0]
             else: # If headers to compare
-                for row in data2_list:
+                for data2_row in data2_list:
                     ok = 1
                     for i in range(0,len(data1Columns)):
                         if data1_row[data1Columns[i]].strip() != data2_row[data2Columns[i]].strip():
                             ok = 0
                     if ok == 1:
-                        desiredRow = row
+                        desiredRow = data2_row
                         break
 
             if desiredRow is not False:
