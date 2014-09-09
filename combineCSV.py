@@ -6,7 +6,7 @@
 ##### Parameters you can have fun playing with
 headersToCompare = [] # VISCODE
 compareDate = True
-dateMatch = 'examdate'
+dateMatch = 'userdate'
 
 ##### The code which you shall not touch without my permission (but feel free to gaze at its ingenuity)
 import csv
@@ -31,7 +31,7 @@ def ensure_proper_format(date):
 
 def return_closest_date(dates_list, date):
     date = ensure_proper_format(date)
-    dates_list = [ensure_proper_format(x) for x in dates_list]
+    dates_list = [ensure_proper_format(x) for x in dates_list if x]
 
     get_datetime = lambda y: datetime.strptime(y, "%Y-%m-%d")
     closest_date = min(dates_list, key=lambda d: abs(get_datetime(d) - get_datetime(date)))
