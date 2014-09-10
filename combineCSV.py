@@ -85,33 +85,34 @@ def list_rid(csvfile):
     return csv_list
 
 
-# Read rid
+### Read rid
 with open(subjectList, newline='') as csvfile:
     data1 = list_rid(csvfile)
 with open(dataList, newline='') as csvfile:
     data2 = list_rid(csvfile)
 
 
-# Write dataList rows to output
+### Determining columns
+# Determine column for rid
+data1_ridColumn = find_column_rid(data1[0], 'subjectsList.csv')
+data2_ridColumn = find_column_rid(data2[0], 'dataList.csv')
+
+# Determine column for date
+if compareDate:
+    data1_dateColumn = find_column_date(data1[0], 'subjectsList.csv')
+    data2_dateColumn = find_column_date(data2[0], 'dataList.csv')
+
+# Determine column for all other variables
+data1Columns = []
+data2Columns = []
+for column_header in headersToCompare:
+    data1Columns.append(find_column(data1[0], column_header))
+    data2Columns.append(find_column(data2[0], column_header))
+
+### Write dataList rows to output
 try:
     with open(outputList, 'w', newline='') as csvfile:
         outputFile = csv.writer(csvfile)
-
-        # Determine column for rid
-        data1_ridColumn = find_column_rid(data1[0], 'subjectsList.csv')
-        data2_ridColumn = find_column_rid(data2[0], 'dataList.csv')
-
-        # Determine column for date
-        if compareDate:
-            data1_dateColumn = find_column_date(data1[0], 'subjectsList.csv')
-            data2_dateColumn = find_column_date(data2[0], 'dataList.csv')
-
-        # Determine column for all other variables
-        data1Columns = []
-        data2Columns = []
-        for column_header in headersToCompare:
-            data1Columns.append(find_column(data1[0], column_header))
-            data2Columns.append(find_column(data2[0], column_header))
 
         # Write headers to outputFile, if any
         outputFile.writerow(['rid','date'] + data2[0])
@@ -126,7 +127,7 @@ try:
             data2_list = []
 
             # Find rows corresponding to the given subject
-            data2_list = [row for row in data2 if bleach_rid(data1_row[data1_ridColumn]) == bleach_rid(row[data2_ridColumn])]
+            data2_list = [row for row in data2 if bleach_rid(data1_row[data1_ridColumn]) == bleach_rid(row[data2_ridColumn])]  ## Problem here for four digits numbers
 
             # Compare rows in data2 for the given desired subject and return desired row
             if not data2_list: # If no row match
