@@ -1,15 +1,14 @@
 #! /usr/bin/env python
-# Read list of patients, go through dataList and retain only necessary patients
+# Read list of patients, go through dataList and retain only corresponding rows, whether user rid, date, or any other variables
 # Works on Python 3 only, not Python 2
-# Version 2014-08-21
 
 ##### Parameters you can have fun playing with
 headersToCompare = [] # VISCODE
-compareDate = True
+compareDate = False
 dateMatch = 'userdate'
 
 ##### The code which you shall not touch without my permission (but feel free to gaze at its ingenuity)
-import csv
+import csv, re
 from datetime import datetime
 
 subjectList = "subjectsList.csv"
@@ -73,7 +72,7 @@ def find_column_date(header, filename):
 
 
 def bleach_rid(rid):
-    rid = ''.join(i for i in rid if i.isdigit()).lstrip('0')
+    rid = re.sub("[^0-9]", "", rid).lstrip('0');
     return rid
 
 
@@ -109,25 +108,31 @@ for column_header in headersToCompare:
     data1Columns.append(find_column(data1[0], column_header))
     data2Columns.append(find_column(data2[0], column_header))
 
-### Write dataList rows to output
+# Create a list of rid's
+data2_rids = []
+for row in data2:
+    data2_rids.append(bleach_rid(row[data2_ridColumn]))
+
+
 try:
     with open(outputList, 'w', newline='') as csvfile:
         outputFile = csv.writer(csvfile)
 
         # Write headers to outputFile, if any
-        outputFile.writerow(['rid','date'] + data2[0])
+        outputFile.writerow(data1[0] + data2[0])
 
         # Actually compare the two lists
         for data1_row in data1:  # For each desired subject/row
+            data1_rid = bleach_rid(data1_row[data1_ridColumn])
 
             # Ignore if row is empty, and initialize some variables
             if not data1_row:
                 continue
             desiredRow = False
-            data2_list = []
 
             # Find rows corresponding to the given subject
-            data2_list = [row for row in data2 if bleach_rid(data1_row[data1_ridColumn]) == bleach_rid(row[data2_ridColumn])]  ## Problem here for four digits numbers
+            #data2_list = [row for row in data2 if bleach_rid(data1_row[data1_ridColumn]) == bleach_rid(row[data2_ridColumn])] ## Problem here for four digits numbers
+            data2_list = [data2[i] for i, j in enumerate(data2_rids) if j == data1_rid]
 
             # Compare rows in data2 for the given desired subject and return desired row
             if not data2_list: # If no row match
@@ -136,6 +141,8 @@ try:
                 dates = []
                 for row in data2_list:
                     dates.append(row[data2_dateColumn])
+                if not dates:
+                    print("You might want to check out dataList.csv. There is no corresponding dates, either you picked the wrong column or there is no info.")
                 index = return_closest_date(dates, data1_row[data1_dateColumn])
                 desiredRow = data2_list[index]
             elif not headersToCompare: # If no headers besides rid and date to compare
