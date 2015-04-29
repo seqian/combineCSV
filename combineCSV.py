@@ -4,8 +4,8 @@
 
 ##### Parameters you can have fun playing with
 headersToCompare = [] # VISCODE
-compareDate = False
-dateMatch = 'userdate'
+compareDate = True
+dateMatch = 'EXAMDATE'
 
 ##### The code which you shall not touch without my permission (but feel free to gaze at its ingenuity)
 import csv, re, sys
